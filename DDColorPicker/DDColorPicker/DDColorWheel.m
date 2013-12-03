@@ -103,7 +103,7 @@
 {
   NSUInteger bytesPerPixel = 4;
   NSUInteger bytesPerRow = bytesPerPixel * _imageWidth;
-  NSUInteger byteIndex = (bytesPerRow * ceilf(point.y)) + ceilf(point.x) * bytesPerPixel;
+  NSUInteger byteIndex = (bytesPerRow * floorf(point.y)) + floorf(point.x) * bytesPerPixel;
   CGFloat red   = _pixelData[byteIndex] / 255.0;
   CGFloat green = _pixelData[byteIndex + 1] / 255.0;
   CGFloat blue  = _pixelData[byteIndex + 2] / 255.0;
@@ -114,18 +114,30 @@
 
 - (BOOL)isValidPoint:(CGPoint)point
 {
-  CGFloat xx = powf(2.f, (point.x - CGRectGetMidX(self.bounds)));
-  CGFloat yy = powf(2.f, (point.y - CGRectGetMidY(self.bounds)));
-  CGFloat rr = powf(2.f, CGRectGetMidX(self.bounds));
-  return (xx + yy) < rr;
+  CGFloat dx = fabsf(point.x - (_imageWidth * .5f));
+  CGFloat dy = fabsf(point.y - (_imageHeight * .5f));
+  CGFloat radius = _imageHeight * .5f;
+  if(dx + dy <= radius)
+  {
+    return YES;
+  }
+  else if(dx > radius || dy > radius)
+  {
+    return NO;
+  }
+  else
+  {
+    return (powf(dx, 2) + powf(dy, 2)) < powf(radius, 2);
+  }
 }
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-  self.previousColor = self.currentColor;
+  self.previousColor = nil;
   CGPoint location = [[touches anyObject] locationInView:self];
   if([self isValidPoint:location])
   {
+    self.previousColor = self.currentColor;
     self.currentColor = [self colorAtPoint:location];
     [self sendActionsForControlEvents:UIControlEventValueChanged];
   }
@@ -136,6 +148,10 @@
   CGPoint location = [[touches anyObject] locationInView:self];
   if([self isValidPoint:location])
   {
+    if(!self.previousColor)
+    {
+      self.previousColor = self.currentColor;
+    }
     self.currentColor = [self colorAtPoint:location];
     [self sendActionsForControlEvents:UIControlEventValueChanged];
   }
@@ -151,10 +167,14 @@
   CGPoint location = [[touches anyObject] locationInView:self];
   if([self isValidPoint:location])
   {
+    if(!self.previousColor)
+    {
+      self.previousColor = self.currentColor;
+    }
     self.currentColor = [self colorAtPoint:location];
     [self sendActionsForControlEvents:UIControlEventValueChanged];
   }
-  else
+  else if(self.previousColor)
   {
     self.currentColor = self.previousColor;
     [self sendActionsForControlEvents:UIControlEventValueChanged];
