@@ -7,7 +7,6 @@
 //
 
 #import "DDColorPickerViewController.h"
-#import "DDColorWheel.h"
 
 #define MAS_SHORTHAND
 #import <Masonry/Masonry.h>
@@ -16,11 +15,15 @@
 
 @property (nonatomic) DDColorPickerOptions options;
 
-@property (nonatomic, strong) DDColorWheel *colorWheel;
+@property (nonatomic, strong, readwrite) DDColorWheel *colorWheel;
 
-@property (nonatomic, strong) UISlider *lightnessSlider;
+@property (nonatomic, strong, readwrite) UISlider *lightnessSlider;
 
-@property (nonatomic, strong) UISlider *alphaSlider;
+@property (nonatomic, strong, readwrite) UISlider *alphaSlider;
+
+@property (nonatomic, strong, readwrite) UIButton *doneButton;
+
+@property (nonatomic, strong, readwrite) UIButton *dismissButton;
 
 @end
 

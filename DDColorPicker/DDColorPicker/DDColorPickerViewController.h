@@ -7,12 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "DDColorWheel.h"
 
 typedef NS_ENUM(uint32_t, DDColorPickerOptions)
 {
   DDColorPickerOptionsShowAlpha = (1 << 0),
   DDColorPickerOptionsShowLightness = (1 << 1),
-  DDColorPickerOptionsDefault = DDColorPickerOptionsShowAlpha | DDColorPickerOptionsShowLightness
+  DDColorPickerOptionsShowDoneButton = (1 << 2),
+  DDColorPickerOptionsShowDismissButton = (1 << 3),
+  DDColorPickerOptionsDefault = DDColorPickerOptionsShowAlpha | DDColorPickerOptionsShowLightness | DDColorPickerOptionsShowDoneButton | DDColorPickerOptionsShowDismissButton
 };
 
 @protocol DDColorPicking;
@@ -26,6 +29,19 @@ typedef NS_ENUM(uint32_t, DDColorPickerOptions)
  *  The delegate to the view controller. Set this property if you wish to be notified of the user's interactions.
  */
 @property (nonatomic, weak) id <DDColorPicking> delegate;
+
+/**
+ *  The color wheel object managed by this view controller
+ */
+@property (nonatomic, readonly) DDColorWheel *colorWheel;
+
+@property (nonatomic, readonly) UISlider *lightnessSlider;
+
+@property (nonatomic, readonly) UISlider *alphaSlider;
+
+@property (nonatomic, readonly) UIButton *doneButton;
+
+@property (nonatomic, readonly) UIButton *dismissButton;
 
 /**
  *  Creates a new color picker
