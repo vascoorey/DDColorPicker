@@ -19,3 +19,5 @@ If you want to contribute to the project please do:
 1. Fork the project
 2. Create a branch on your fork and make your changes
 3. Request a pull request with your changes
+
+*Any contributions to this project will be considered as licensed as MIT and right to define the license for all contributed code as transferred to Vasco Orey*
