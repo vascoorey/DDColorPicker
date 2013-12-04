@@ -13,6 +13,7 @@
 @interface DDViewController () <DDColorPicking>
 @property (nonatomic, strong) DDColorWheel *colorWheel;
 @property (nonatomic, strong) UIPopoverController *popover;
+@property (weak, nonatomic) IBOutlet UIView *colorView;
 @property (nonatomic, strong) IBOutlet UIButton *button;
 @end
 
@@ -39,12 +40,12 @@
 
 - (void)colorPicker:(DDColorPickerViewController *)viewController didHighlightColor:(UIColor *)color
 {
-  self.view.backgroundColor = color;
+  self.colorView.backgroundColor = color;
 }
 
 - (void)colorPicker:(DDColorPickerViewController *)viewController didPickColor:(UIColor *)color
 {
-  self.view.backgroundColor = color;
+  self.colorView.backgroundColor = color;
 }
 
 @end
