@@ -8,6 +8,10 @@
 
 #import "DDColorWheel.h"
 
+#import <Accelerate/Accelerate.h>
+
+static CGFloat const kMinimumValue = .01f;
+
 @interface DDColorWheel ()
 
 /**
@@ -37,6 +41,14 @@
   NSUInteger _totalPixels;
   NSUInteger _imageWidth;
   NSUInteger _imageHeight;
+  UIImageView *_imageView;
+}
+
+#pragma mark - Class Methods
+
++ (instancetype)colorWheel
+{
+  return [[self alloc] init];
 }
 
 #pragma mark - Properties
@@ -45,48 +57,91 @@
 {
   if(colorWheel != _colorWheel)
   {
-    if(_pixelData)
-    {
-      free(_pixelData);
-    }
-    // Get the image into the data buffer
     CGImageRef imageRef = [colorWheel CGImage];
     _imageWidth = CGImageGetWidth(imageRef);
     _imageHeight = CGImageGetHeight(imageRef);
     
     // Save total ammount of pixels for colorAtPoint:
     _totalPixels = _imageWidth * _imageHeight;
-    
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    
-    // Create the buffer (was freed earlier on).
-    _pixelData = (unsigned char*) calloc(_imageHeight * _imageWidth * 4, sizeof(unsigned char));
-    NSUInteger bytesPerPixel = 4;
-    NSUInteger bytesPerRow = bytesPerPixel * _imageWidth;
-    NSUInteger bitsPerComponent = 8;
-    CGContextRef context = CGBitmapContextCreate(_pixelData, _imageWidth, _imageHeight,
-                                                 bitsPerComponent, bytesPerRow, colorSpace,
-                                                 kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
-    CGColorSpaceRelease(colorSpace);
-    
-    CGContextDrawImage(context, CGRectMake(0, 0, _imageWidth, _imageHeight), imageRef);
-    CGContextRelease(context);
   }
   _colorWheel = colorWheel;
 }
 
+- (void)setLightness:(CGFloat)lightness
+{
+  if(lightness < 0.f)
+  {
+    lightness = 0.f;
+  }
+  else if(lightness > 1.f)
+  {
+    lightness = 1.f;
+  }
+  else if(_lightness != lightness && fabsf(lightness - _lightness) > kMinimumValue)
+  {
+    _lightness = lightness;
+    [self updateColorWheel];
+  }
+}
+
+- (void)setWheelAlpha:(CGFloat)wheelAlpha
+{
+  if(wheelAlpha < 0.f)
+  {
+    wheelAlpha = 0.f;
+  }
+  else if(wheelAlpha > 1.f)
+  {
+    wheelAlpha = 1.f;
+  }
+  else if(_wheelAlpha != wheelAlpha && fabsf(wheelAlpha - _wheelAlpha) > kMinimumValue)
+  {
+    _wheelAlpha = wheelAlpha;
+    [self updateColorWheel];
+  }
+}
+
 #pragma mark - Lifecycle
 
-- (void)drawRect:(CGRect)rect
+- (void)setup
 {
-  int dim = self.bounds.size.width; // should always be square.
-  CFMutableDataRef bitmapData = CFDataCreateMutable(NULL, 0);
-  CFDataSetLength(bitmapData, dim * dim * 4);
-  generateColorWheelBitmap(CFDataGetMutableBytePtr(bitmapData), dim, .5f);
-  UIImage *image = createUIImageWithRGBAData(bitmapData, self.bounds.size.width, self.bounds.size.height);
-  CFRelease(bitmapData);
-  [image drawAtPoint:CGPointZero];
-  self.colorWheel = image;
+  self.backgroundColor = [UIColor clearColor];
+  _imageView = [[UIImageView alloc] init];
+  [self addSubview:_imageView];
+  
+  [_imageView makeConstraints:^(MASConstraintMaker *make) {
+    make.edges.equalTo(self);
+  }];
+  
+  self.layer.masksToBounds = YES;
+  self.layer.drawsAsynchronously = YES;
+}
+
+- (id)init
+{
+  if((self = [super init]))
+  {
+    [self setup];
+  }
+  return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+  if((self = [super initWithCoder:aDecoder]))
+  {
+    [self setup];
+  }
+  return self;
+}
+
+- (id)initWithFrame:(CGRect)frame
+{
+  if((self = [super initWithFrame:frame]))
+  {
+    [self setup];
+  }
+  return self;
 }
 
 - (void)dealloc
@@ -97,19 +152,29 @@
   }
 }
 
+- (void)layoutSubviews
+{
+  [super layoutSubviews];
+  NSLog(@"%@", NSStringFromCGRect(self.bounds));
+  self.layer.cornerRadius = .5f * self.bounds.size.width;
+}
+
 #pragma mark - Touch
 
 - (UIColor *)colorAtPoint:(CGPoint)point
 {
-  NSUInteger bytesPerPixel = 4;
-  NSUInteger bytesPerRow = bytesPerPixel * _imageWidth;
-  NSUInteger byteIndex = (bytesPerRow * floorf(point.y)) + floorf(point.x) * bytesPerPixel;
-  CGFloat red   = _pixelData[byteIndex] / 255.0;
-  CGFloat green = _pixelData[byteIndex + 1] / 255.0;
-  CGFloat blue  = _pixelData[byteIndex + 2] / 255.0;
-  CGFloat alpha = _pixelData[byteIndex + 3] / 255.0;
+//  NSUInteger bytesPerPixel = 4;
+//  NSUInteger bytesPerRow = bytesPerPixel * _imageWidth;
+//  NSUInteger byteIndex = (bytesPerRow * floorf(point.y)) + floorf(point.x) * bytesPerPixel;
+//  CGFloat red   = _pixelData[byteIndex] / 255.0;
+//  CGFloat green = _pixelData[byteIndex + 1] / 255.0;
+//  CGFloat blue  = _pixelData[byteIndex + 2] / 255.0;
+//  CGFloat alpha = _pixelData[byteIndex + 3] / 255.0;
+  float hue = 0.f, saturation = 0.f, red = 0.f, green = 0.f, blue = 0.f;
+  getColorWheelValue((int)_imageWidth, floorf(point.x), floorf(point.y), &hue, &saturation);
+  HSL2RGB(hue, saturation, self.lightness, &red, &green, &blue);
   
-  return [UIColor colorWithRed:red green:green blue:blue alpha:alpha];
+  return [UIColor colorWithRed:red green:green blue:blue alpha:self.wheelAlpha];
 }
 
 - (BOOL)isValidPoint:(CGPoint)point
@@ -183,31 +248,47 @@
 
 #pragma mark - Color Wheel Code
 
+- (void)updateColorWheel
+{
+  static dispatch_queue_t colorWheelQueue = nil;
+  if(!colorWheelQueue)
+  {
+    colorWheelQueue = dispatch_queue_create("com.deltadog.colorwheelqueue", DISPATCH_QUEUE_CONCURRENT);
+  }
+  
+  int dim = self.bounds.size.width; // should always be square.
+  dispatch_async(colorWheelQueue, ^{
+    CFMutableDataRef bitmapData = CFDataCreateMutable(NULL, 0);
+    CFDataSetLength(bitmapData, dim * dim * 4);
+    [self generateColorWheelBitmap:CFDataGetMutableBytePtr(bitmapData) side:dim];
+    UIImage *image = createUIImageWithRGBAData(bitmapData, self.bounds.size.width, self.bounds.size.height);
+    CFRelease(bitmapData);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      _imageView.image = image;
+      _imageView.alpha = self.wheelAlpha;
+      self.colorWheel = image;
+      [self setNeedsDisplay];
+    });
+  });
+}
+
 // http://stackoverflow.com/a/5110332/1132931)
 
-void generateColorWheelBitmap(UInt8 *bitmap, int widthHeight, float l)
+- (void)generateColorWheelBitmap:(UInt8 *)bitmap side:(int)side 
 {
   // I think maybe you can do 1/3 of the pie, then do something smart to generate the other two parts, but for now we'll brute force it.
-  for (int y = 0; y < widthHeight; y++)
+  for (int y = 0; y < side; y++)
   {
-    for (int x = 0; x < widthHeight; x++)
+    for (int x = 0; x < side; x++)
     {
       float h, s, r, g, b, a;
-      getColorWheelValue(widthHeight, x, y, &h, &s);
-      if (s < 1.0)
-      {
-        // Antialias the edge of the circle.
-        if (s > 0.99) a = (1.0 - s) * 100;
-        else a = 1.0;
-        
-        HSL2RGB(h, s, l, &r, &g, &b);
-      }
-      else
-      {
-        r = g = b = a = 0.0f;
-      }
+      getColorWheelValue(side, x, y, &h, &s);
+    
+      a = self.wheelAlpha;
       
-      int i = 4 * (x + y * widthHeight);
+      HSL2RGB(h, s, self.lightness, &r, &g, &b);
+      
+      int i = 4 * (x + y * side);
       bitmap[i] = r * 0xff;
       bitmap[i+1] = g * 0xff;
       bitmap[i+2] = b * 0xff;
@@ -219,11 +300,20 @@ void generateColorWheelBitmap(UInt8 *bitmap, int widthHeight, float l)
 void getColorWheelValue(int widthHeight, int x, int y, float *outH, float *outS)
 {
   int c = widthHeight / 2;
+  int size = 1;
   float dx = (float)(x - c) / c;
   float dy = (float)(y - c) / c;
-  float d = sqrtf((float)(dx*dx + dy*dy));
+  float calc = (float)(dx*dx + dy*dy);
+  float temp = 0.f;
+  float d = 0.f;
+//  float d = sqrtf((float)(dx*dx + dy*dy));
+  vvsqrtf(&d, &calc, &size);
+  calc = (float)dx / d;
+  temp = 0.f;
   *outS = d;
-  *outH = acosf((float)dx / d) / M_PI / 2.0f;
+  vvacosf(&temp, &calc, &size);
+  *outH = temp / M_PI / 2.f;
+//  *outH = acosf((float)dx / d) / M_PI / 2.0f;
   if (dy < 0) *outH = 1.0 - *outH;
 }
 
@@ -276,8 +366,9 @@ void HSL2RGB(float h, float s, float l, float* outR, float* outG, float* outB)
       temp[i] -= 1.0;
     
     
-    if(6.0 * temp[i] < 1.0)
-      temp[i] = temp1 + (temp2 - temp1) * 6.0 * temp[i];
+    CGFloat test = 6.f * temp[i];
+    if(test < 1.0)
+      temp[i] = temp1 + (temp2 - temp1) * test;
     else {
       if(2.0 * temp[i] < 1.0)
         temp[i] = temp2;

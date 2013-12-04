@@ -8,9 +8,12 @@
 
 #import "DDViewController.h"
 #import "DDColorWheel.h"
+#import "DDColorPickerViewController.h"
 
-@interface DDViewController ()
-
+@interface DDViewController () <DDColorPicking>
+@property (nonatomic, strong) DDColorWheel *colorWheel;
+@property (nonatomic, strong) UIPopoverController *popover;
+@property (nonatomic, strong) IBOutlet UIButton *button;
 @end
 
 @implementation DDViewController
@@ -18,22 +21,34 @@
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-  DDColorWheel *wheel = [[DDColorWheel alloc] init];
-  [self.view addSubview:wheel];
   
-  [wheel addTarget:self action:@selector(colorChanged:) forControlEvents:UIControlEventValueChanged];
-  
-  [wheel makeConstraints:^(MASConstraintMaker *make) {
-    make.width.equalTo(self.view.width);
-    make.height.equalTo(self.view.width);
+  [self.button makeConstraints:^(MASConstraintMaker *make) {
     make.center.equalTo(self.view);
   }];
 }
 
-- (void)colorChanged:(DDColorWheel *)sender
+- (void)viewDidAppear:(BOOL)animated
 {
-  self.view.backgroundColor = sender.currentColor;
+  [super viewDidAppear:animated];
+  [self.view bringSubviewToFront:self.button];
+}
+
+- (IBAction)showPicker:(UIButton *)sender
+{
+  self.popover = [[UIPopoverController alloc] initWithContentViewController:[DDColorPickerViewController colorPickerWithDelegate:self]];
+  [self.popover presentPopoverFromRect:sender.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+}
+
+#pragma mark - DDColorPicking
+
+- (void)viewController:(DDColorPickerViewController *)viewController didHighlightColor:(UIColor *)color
+{
+  self.view.backgroundColor = color;
+}
+
+- (void)viewController:(DDColorPickerViewController *)viewController didPickColor:(UIColor *)color
+{
+  self.view.backgroundColor = color;
 }
 
 @end

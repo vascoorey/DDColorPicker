@@ -8,11 +8,34 @@
 
 #import <UIKit/UIKit.h>
 
+/**
+ *  DDColorWheel acts as a 2 dimensional UISlider. Will send UIControlEventValueChanged events.
+ */
 @interface DDColorWheel : UIControl
 
 /**
  *  The currently selected color.
  */
 @property (nonatomic, readonly) UIColor *currentColor;
+
+/**
+ *  The lightness of the color wheel (HSL). 0.0 - 1.0
+ */
+@property (nonatomic) CGFloat lightness;
+
+/**
+ *  The alpha of the color wheel. 0.0 - 1.0
+ */
+@property (nonatomic) CGFloat wheelAlpha;
+
+/**
+ *  Creates a new color wheel.
+ */
++ (instancetype)colorWheel;
+
+/**
+ *  Updates the color wheel
+ */
+- (void)updateColorWheel;
 
 @end

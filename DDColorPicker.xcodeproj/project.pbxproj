@@ -12,6 +12,7 @@
 		BCC0365A184E7A09003662D9 /* DDColorPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BCC03658184E7A09003662D9 /* DDColorPickerViewController.m */; };
 		BCC0365E184E7BF5003662D9 /* DDColorWheel.m in Sources */ = {isa = PBXBuildFile; fileRef = BCC0365D184E7BF5003662D9 /* DDColorWheel.m */; };
 		BCC0365F184E7BF5003662D9 /* DDColorWheel.m in Sources */ = {isa = PBXBuildFile; fileRef = BCC0365D184E7BF5003662D9 /* DDColorWheel.m */; };
+		BCC03661184F9639003662D9 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCC03660184F9639003662D9 /* Accelerate.framework */; };
 		BCDAFAF0184E78AD00CC5EC9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCDAFAEF184E78AD00CC5EC9 /* Foundation.framework */; };
 		BCDAFAF2184E78AD00CC5EC9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCDAFAF1184E78AD00CC5EC9 /* CoreGraphics.framework */; };
 		BCDAFAF4184E78AD00CC5EC9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCDAFAF3184E78AD00CC5EC9 /* UIKit.framework */; };
@@ -44,6 +45,7 @@
 		BCC03658184E7A09003662D9 /* DDColorPickerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDColorPickerViewController.m; path = DDColorPicker/DDColorPickerViewController.m; sourceTree = "<group>"; };
 		BCC0365C184E7BF5003662D9 /* DDColorWheel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDColorWheel.h; path = DDColorPicker/DDColorWheel.h; sourceTree = "<group>"; };
 		BCC0365D184E7BF5003662D9 /* DDColorWheel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDColorWheel.m; path = DDColorPicker/DDColorWheel.m; sourceTree = "<group>"; };
+		BCC03660184F9639003662D9 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		BCDAFAEC184E78AD00CC5EC9 /* DDColorPicker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DDColorPicker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BCDAFAEF184E78AD00CC5EC9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		BCDAFAF1184E78AD00CC5EC9 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -73,6 +75,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BCC03661184F9639003662D9 /* Accelerate.framework in Frameworks */,
 				BCDAFAF2184E78AD00CC5EC9 /* CoreGraphics.framework in Frameworks */,
 				BCDAFAF4184E78AD00CC5EC9 /* UIKit.framework in Frameworks */,
 				BCDAFAF0184E78AD00CC5EC9 /* Foundation.framework in Frameworks */,
@@ -129,6 +132,7 @@
 		BCDAFAEE184E78AD00CC5EC9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				BCC03660184F9639003662D9 /* Accelerate.framework */,
 				BCDAFAEF184E78AD00CC5EC9 /* Foundation.framework */,
 				BCDAFAF1184E78AD00CC5EC9 /* CoreGraphics.framework */,
 				BCDAFAF3184E78AD00CC5EC9 /* UIKit.framework */,
