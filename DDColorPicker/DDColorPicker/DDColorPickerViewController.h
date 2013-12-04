@@ -85,4 +85,9 @@ typedef NS_ENUM(uint32_t, DDColorPickerOptions)
  */
 - (void)colorPicker:(DDColorPickerViewController *)viewController didHighlightColor:(UIColor *)color;
 
+/**
+ *  Sent to the delegate if the user explicitly dismissed the controller
+ */
+- (void)colorPickerDidDismiss:(DDColorPickerViewController *)viewController;
+
 @end

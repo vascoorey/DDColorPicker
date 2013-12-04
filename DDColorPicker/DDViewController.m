@@ -21,10 +21,6 @@
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  
-  [self.button makeConstraints:^(MASConstraintMaker *make) {
-    make.center.equalTo(self.view);
-  }];
 }
 
 - (void)viewDidAppear:(BOOL)animated

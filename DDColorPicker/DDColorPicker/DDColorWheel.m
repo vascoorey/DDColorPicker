@@ -155,25 +155,17 @@ static CGFloat const kMinimumValue = .01f;
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  NSLog(@"%@", NSStringFromCGRect(self.bounds));
   self.layer.cornerRadius = .5f * self.bounds.size.width;
+  [self updateColorWheel];
 }
 
 #pragma mark - Touch
 
 - (UIColor *)colorAtPoint:(CGPoint)point
 {
-//  NSUInteger bytesPerPixel = 4;
-//  NSUInteger bytesPerRow = bytesPerPixel * _imageWidth;
-//  NSUInteger byteIndex = (bytesPerRow * floorf(point.y)) + floorf(point.x) * bytesPerPixel;
-//  CGFloat red   = _pixelData[byteIndex] / 255.0;
-//  CGFloat green = _pixelData[byteIndex + 1] / 255.0;
-//  CGFloat blue  = _pixelData[byteIndex + 2] / 255.0;
-//  CGFloat alpha = _pixelData[byteIndex + 3] / 255.0;
   float hue = 0.f, saturation = 0.f, red = 0.f, green = 0.f, blue = 0.f;
   getColorWheelValue((int)_imageWidth, floorf(point.x), floorf(point.y), &hue, &saturation);
   HSL2RGB(hue, saturation, self.lightness, &red, &green, &blue);
-  
   return [UIColor colorWithRed:red green:green blue:blue alpha:self.wheelAlpha];
 }
 
@@ -250,6 +242,10 @@ static CGFloat const kMinimumValue = .01f;
 
 - (void)updateColorWheel
 {
+  if(!(int)self.bounds.size.width)
+  {
+    return;
+  }
   static dispatch_queue_t colorWheelQueue = nil;
   if(!colorWheelQueue)
   {
