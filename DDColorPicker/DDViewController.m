@@ -41,12 +41,12 @@
 
 #pragma mark - DDColorPicking
 
-- (void)viewController:(DDColorPickerViewController *)viewController didHighlightColor:(UIColor *)color
+- (void)colorPicker:(DDColorPickerViewController *)viewController didHighlightColor:(UIColor *)color
 {
   self.view.backgroundColor = color;
 }
 
-- (void)viewController:(DDColorPickerViewController *)viewController didPickColor:(UIColor *)color
+- (void)colorPicker:(DDColorPickerViewController *)viewController didPickColor:(UIColor *)color
 {
   self.view.backgroundColor = color;
 }

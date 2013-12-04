@@ -48,7 +48,8 @@ typedef NS_ENUM(uint32_t, DDColorPickerOptions)
  *  Color picking protocol. All methods are optional.
  */
 @protocol DDColorPicking <NSObject>
-@optional
+
+@required
 
 /**
  *  Sent to the delegate when the user specifically selected the given color.
@@ -56,7 +57,9 @@ typedef NS_ENUM(uint32_t, DDColorPickerOptions)
  *  @param viewController The sender instance
  *  @param color          The selected color
  */
-- (void)viewController:(DDColorPickerViewController *)viewController didPickColor:(UIColor *)color;
+- (void)colorPicker:(DDColorPickerViewController *)viewController didPickColor:(UIColor *)color;
+
+@optional
 
 /**
  *  Sent to the delegate when the specified color has been highlighted (i.e. the user swiped over the color).
@@ -64,6 +67,6 @@ typedef NS_ENUM(uint32_t, DDColorPickerOptions)
  *  @param viewController The sender instance
  *  @param color          The highlighted color
  */
-- (void)viewController:(DDColorPickerViewController *)viewController didHighlightColor:(UIColor *)color;
+- (void)colorPicker:(DDColorPickerViewController *)viewController didHighlightColor:(UIColor *)color;
 
 @end

@@ -77,7 +77,7 @@ static CGFloat const kMinimumValue = .01f;
   {
     lightness = 1.f;
   }
-  else if(_lightness != lightness && fabsf(lightness - _lightness) > kMinimumValue)
+  if(_lightness != lightness && fabsf(lightness - _lightness) > kMinimumValue)
   {
     _lightness = lightness;
     [self updateColorWheel];
@@ -94,7 +94,7 @@ static CGFloat const kMinimumValue = .01f;
   {
     wheelAlpha = 1.f;
   }
-  else if(_wheelAlpha != wheelAlpha && fabsf(wheelAlpha - _wheelAlpha) > kMinimumValue)
+  if(_wheelAlpha != wheelAlpha && fabsf(wheelAlpha - _wheelAlpha) > kMinimumValue)
   {
     _wheelAlpha = wheelAlpha;
     [self updateColorWheel];

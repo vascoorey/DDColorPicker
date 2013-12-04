@@ -140,9 +140,9 @@
   {
     self.colorWheel.wheelAlpha = self.alphaSlider.value;
   }
-  else if(sender == self.colorWheel)
+  else if(sender == self.colorWheel && [self.delegate respondsToSelector:@selector(colorPicker:didHighlightColor:)])
   {
-    [self.delegate viewController:self didHighlightColor:self.colorWheel.currentColor];
+    [self.delegate colorPicker:self didHighlightColor:self.colorWheel.currentColor];
   }
 }
 
