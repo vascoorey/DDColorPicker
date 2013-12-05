@@ -75,14 +75,19 @@
   
   [self.colorWheel makeConstraints:^(MASConstraintMaker *make) {
     make.height.equalTo(self.colorWheel.width);
-    make.width.lessThanOrEqualTo(self.view.width);
-    make.left.equalTo(self.view.left).with.offset(15);
-    make.right.equalTo(self.view.right).with.offset(-15);
+    make.width.equalTo(self.view.width).multipliedBy(.8f);
+    make.centerX.equalTo(self.view.centerX);
     make.top.equalTo(self.view.top).with.offset(15);
   }];
   
   UIView *sliderView = [[UIView alloc] init];
   [self.view addSubview:sliderView];
+  
+  [sliderView makeConstraints:^(MASConstraintMaker *make) {
+    make.top.equalTo(self.colorWheel.bottom);
+    make.left.equalTo(self.view.left);
+    make.right.equalTo(self.view.right);
+  }];
   
   if(self.options & DDColorPickerOptionsShowAlpha)
   {
@@ -94,8 +99,8 @@
     [sliderView addSubview:self.alphaSlider];
     
     [self.alphaSlider makeConstraints:^(MASConstraintMaker *make) {
-      make.left.equalTo(sliderView.left).with.offset(15);
-      make.right.equalTo(sliderView.right).with.offset(-15);
+      make.width.equalTo(sliderView.width).multipliedBy(.8f);
+      make.centerX.equalTo(sliderView.centerX);
       make.top.equalTo(self.colorWheel.bottom);
       if(!(self.options & DDColorPickerOptionsShowLightness))
       {
@@ -114,8 +119,8 @@
     [sliderView addSubview:self.lightnessSlider];
     
     [self.lightnessSlider makeConstraints:^(MASConstraintMaker *make) {
-      make.left.equalTo(sliderView.left).with.offset(15);
-      make.right.equalTo(sliderView.right).with.offset(-15);
+      make.width.equalTo(sliderView.width).multipliedBy(.8f);
+      make.centerX.equalTo(sliderView.centerX);
       if(self.options & DDColorPickerOptionsShowAlpha)
       {
         make.top.equalTo(self.alphaSlider.bottom);
@@ -127,12 +132,6 @@
       make.bottom.equalTo(sliderView.bottom).with.offset(-15);
     }];
   }
-  
-  [sliderView makeConstraints:^(MASConstraintMaker *make) {
-    make.top.equalTo(self.colorWheel.bottom);
-    make.left.equalTo(self.view.left);
-    make.right.equalTo(self.view.right);
-  }];
   
   UIView *buttonView = [[UIView alloc] init];
   [self.view addSubview:buttonView];
@@ -196,12 +195,10 @@
   if(sender == self.doneButton)
   {
     [self.delegate colorPicker:self didPickColor:self.colorWheel.currentColor];
-    [self dismissViewControllerAnimated:YES completion:nil];
   }
-  else if(sender == self.dismissButton)
+  else if(sender == self.dismissButton && [self.delegate respondsToSelector:@selector(colorPickerDidDismiss:)])
   {
     [self.delegate colorPickerDidDismiss:self];
-    [self dismissViewControllerAnimated:YES completion:nil];
   }
 }
 

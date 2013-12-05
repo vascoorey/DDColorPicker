@@ -49,7 +49,7 @@ typedef NS_ENUM(uint32_t, DDColorPickerOptions)
 + (instancetype)colorPicker;
 
 /**
- *  Creates a new color picker with the given delegate
+ *  Creates a new color picker with the given delegate and default options
  */
 + (instancetype)colorPickerWithDelegate:(id <DDColorPicking>)delegate;
 

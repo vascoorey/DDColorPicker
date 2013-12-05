@@ -36,6 +36,11 @@
   [self.popover presentPopoverFromRect:sender.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
+- (IBAction)presentPicker:(id)sender
+{
+  [self presentViewController:[DDColorPickerViewController colorPickerWithDelegate:self] animated:YES completion:nil];
+}
+
 #pragma mark - DDColorPicking
 
 - (void)colorPicker:(DDColorPickerViewController *)viewController didHighlightColor:(UIColor *)color
@@ -46,6 +51,18 @@
 - (void)colorPicker:(DDColorPickerViewController *)viewController didPickColor:(UIColor *)color
 {
   self.colorView.backgroundColor = color;
+  if(self.presentedViewController)
+  {
+    [self dismissViewControllerAnimated:YES completion:nil];
+  }
+}
+
+- (void)colorPickerDidDismiss:(DDColorPickerViewController *)viewController
+{
+  if(self.presentedViewController)
+  {
+    [self dismissViewControllerAnimated:YES completion:nil];
+  }
 }
 
 @end
