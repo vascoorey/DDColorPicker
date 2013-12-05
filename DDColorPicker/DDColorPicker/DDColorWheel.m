@@ -11,7 +11,7 @@
 
 #import <Accelerate/Accelerate.h>
 
-static CGFloat const kMinimumValue = .05f;
+static CGFloat const kMinimumValue = .005f;
 
 @interface DDColorWheel ()
 
@@ -250,14 +250,15 @@ static CGFloat const kMinimumValue = .05f;
   {
     return;
   }
-  if(self.generator)
-  {
-    [self.generator cancel];
-  }
+//  if(self.generator)
+//  {
+//    [self.generator cancel];
+//    [self.generator setCompletionBlock:nil];
+//  }
   self.generator = [DDColorWheelGenerator generatorWithWidth:self.bounds.size.width height:self.bounds.size.height lightness:self.lightness completionBlock:^(UIImage *image) {
     dispatch_async(dispatch_get_main_queue(), ^{
       _imageView.image = image;
-      _imageView.alpha = self.alpha;
+      _imageView.alpha = self.wheelAlpha;
       self.colorWheel = image;
       [self setNeedsDisplay];
     });

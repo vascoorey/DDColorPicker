@@ -16,7 +16,7 @@
 
 @property BOOL isFinished;
 
-@property CGFloat lightness;
+@property (nonatomic) CGFloat lightness;
 
 @property int width;
 
@@ -119,26 +119,30 @@
   {
     generatorQueue = dispatch_queue_create("com.deltadog.colorpicker.generatorqueue", DISPATCH_QUEUE_CONCURRENT);
   }
-  dispatch_apply((size_t)side, generatorQueue, ^(size_t y) {
-    dispatch_apply((size_t)side, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t x) {
+//  dispatch_apply((size_t)side, generatorQueue, ^(size_t y) {
+  for(int y = 0; y < side; y ++)
+  {
+    for(int x = 0; x < side; x ++)
+    {
       if ([self isCancelled])
       {
         return;
       }
       CGFloat h, s, r, g, b, a;
-      [[self class] getColorWheelValue:side x:x y:y toHue:&h saturation:&s];
+      [[self class] getColorWheelValue:side x:x y:(int)y toHue:&h saturation:&s];
       
       a = 1.f;
       
       [[self class] hue:h saturation:s lightness:self.lightness toRed:&r green:&g blue:&b];
       
-      int i = 4 * (x + y * side);
+      int i = 4 * (x + (int)y * side);
       bitmap[i] = r * 0xff;
       bitmap[i+1] = g * 0xff;
       bitmap[i+2] = b * 0xff;
       bitmap[i+3] = a * 0xff;
-    });
-  });
+    }
+  }
+//  });
 }
 
 - (UIImage *)imageWithRGBAData:(CFDataRef)data width:(NSUInteger)width height:(NSUInteger)height
