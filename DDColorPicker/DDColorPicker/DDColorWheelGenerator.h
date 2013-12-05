@@ -36,6 +36,6 @@
  *  @param hue        Hue
  *  @param saturation Saturation
  */
-+ (void)getColorWheelValue:(NSUInteger)side x:(NSUInteger)x y:(NSUInteger)y toHue:(CGFloat *)hue saturation:(CGFloat *)saturation;
++ (void)getColorWheelValue:(int)side x:(int)x y:(int)y toHue:(CGFloat *)hue saturation:(CGFloat *)saturation;
 
 @end

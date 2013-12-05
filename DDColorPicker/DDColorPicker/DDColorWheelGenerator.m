@@ -18,9 +18,9 @@
 
 @property CGFloat lightness;
 
-@property NSUInteger width;
+@property int width;
 
-@property NSUInteger height;
+@property int height;
 
 @property UIImage *generatedImage;
 
@@ -41,8 +41,8 @@
   {
     _lightness = lightness;
     _completion = [block copy];
-    _width = width;
-    _height = height;
+    _width = (int)width;
+    _height = (int)height;
     __weak typeof (self) weakself = self;
     [self setCompletionBlock:^{
       if(weakself.completion && weakself.generatedImage)
@@ -111,7 +111,7 @@
 
 // http://stackoverflow.com/a/5110332/1132931)
 
-- (void)generateColorWheelBitmap:(UInt8 *)bitmap side:(NSUInteger)side
+- (void)generateColorWheelBitmap:(UInt8 *)bitmap side:(int)side
 {
   // I think maybe you can do 1/3 of the pie, then do something smart to generate the other two parts, but for now we'll brute force it.
   static dispatch_queue_t generatorQueue = nil;
@@ -119,26 +119,25 @@
   {
     generatorQueue = dispatch_queue_create("com.deltadog.colorpicker.generatorqueue", DISPATCH_QUEUE_CONCURRENT);
   }
-  dispatch_apply((size_t)side, generatorQueue, ^(size_t idx) {
-    for (int x = 0; x < side; x++)
-    {
+  dispatch_apply((size_t)side, generatorQueue, ^(size_t y) {
+    dispatch_apply((size_t)side, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^(size_t x) {
       if ([self isCancelled])
       {
         return;
       }
       CGFloat h, s, r, g, b, a;
-      [[self class] getColorWheelValue:side x:x y:idx toHue:&h saturation:&s];
+      [[self class] getColorWheelValue:side x:x y:y toHue:&h saturation:&s];
       
       a = 1.f;
       
       [[self class] hue:h saturation:s lightness:self.lightness toRed:&r green:&g blue:&b];
       
-      NSUInteger i = 4 * (x + idx * side);
+      int i = 4 * (x + y * side);
       bitmap[i] = r * 0xff;
       bitmap[i+1] = g * 0xff;
       bitmap[i+2] = b * 0xff;
       bitmap[i+3] = a * 0xff;
-    }
+    });
   });
 }
 
@@ -154,9 +153,29 @@
   return image;
 }
 
-+ (void)getColorWheelValue:(NSUInteger)side x:(NSUInteger)x y:(NSUInteger)y toHue:(CGFloat *)hue saturation:(CGFloat *)saturation
+void getColorWheelValue(int widthHeight, int x, int y, float *outH, float *outS)
 {
-  NSUInteger c = side / 2;
+  int c = widthHeight / 2;
+  int size = 1;
+  float dx = (float)(x - c) / c;
+  float dy = (float)(y - c) / c;
+  float calc = (float)(dx*dx + dy*dy);
+  float temp = 0.f;
+  float d = 0.f;
+  //  float d = sqrtf((float)(dx*dx + dy*dy));
+  vvsqrtf(&d, &calc, &size);
+  calc = (float)dx / d;
+  temp = 0.f;
+  *outS = d;
+  vvacosf(&temp, &calc, &size);
+  *outH = temp / M_PI / 2.f;
+  //  *outH = acosf((float)dx / d) / M_PI / 2.0f;
+  if (dy < 0) *outH = 1.0 - *outH;
+}
+
++ (void)getColorWheelValue:(int)side x:(int)x y:(int)y toHue:(CGFloat *)hue saturation:(CGFloat *)saturation
+{
+  int c = side / 2;
   int size = 1;
   float dx = (float)(x - c) / c;
   float dy = (float)(y - c) / c;
