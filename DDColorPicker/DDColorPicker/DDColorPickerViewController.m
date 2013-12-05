@@ -25,6 +25,8 @@
 
 @property (nonatomic, strong, readwrite) UIButton *dismissButton;
 
+@property (nonatomic, strong) id <MASConstraint> colorWheelTopOffsetConstraint;
+
 @end
 
 @implementation DDColorPickerViewController
@@ -77,7 +79,7 @@
     make.height.equalTo(self.colorWheel.width);
     make.width.equalTo(self.view.width).multipliedBy(.8f);
     make.centerX.equalTo(self.view.centerX);
-    make.top.equalTo(self.view.top).with.offset(15);
+    self.colorWheelTopOffsetConstraint = make.top.equalTo(self.view.top).with.offset(15);
   }];
   
   UIView *sliderView = [[UIView alloc] init];
@@ -170,6 +172,20 @@
     make.right.equalTo(self.view.right);
     make.bottom.equalTo(self.view.bottom);
   }];
+}
+
+- (void)viewWillLayoutSubviews
+{
+  [self.colorWheelTopOffsetConstraint uninstall];
+  [self.colorWheel makeConstraints:^(MASConstraintMaker *make) {
+    self.colorWheelTopOffsetConstraint = make.top.equalTo(self.view.top).with.offset(self.view.bounds.size.width * .1f);
+  }];
+  [super viewWillLayoutSubviews];
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+  return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
 }
 
 #pragma mark - Actions

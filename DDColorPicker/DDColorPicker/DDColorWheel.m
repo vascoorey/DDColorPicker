@@ -11,7 +11,7 @@
 
 #import <Accelerate/Accelerate.h>
 
-static CGFloat const kMinimumValue = .005f;
+static CGFloat const kMinimumValue = .01f;
 
 @interface DDColorWheel ()
 
@@ -25,6 +25,8 @@ static CGFloat const kMinimumValue = .005f;
 @property (nonatomic, strong) UIColor *previousColor;
 
 @property (nonatomic, strong) DDColorWheelGenerator *generator;
+
+@property (nonatomic, strong) NSOperationQueue *operationQueue;
 
 /**
  *  Get the color wheel's color at the given point
@@ -168,7 +170,7 @@ static CGFloat const kMinimumValue = .005f;
 - (UIColor *)colorAtPoint:(CGPoint)point
 {
   CGFloat hue = 0.f, saturation = 0.f, red = 0.f, green = 0.f, blue = 0.f;
-  [DDColorWheelGenerator getColorWheelValue:(int)_imageWidth x:(NSUInteger)point.x y:(NSUInteger)point.y toHue:&hue saturation:&saturation];
+  [DDColorWheelGenerator getColorWheelValue:(int)_imageWidth x:(int)point.x y:(int)point.y toHue:&hue saturation:&saturation];
   [DDColorWheelGenerator hue:hue saturation:saturation lightness:self.lightness toRed:&red green:&green blue:&blue];
   return [UIColor colorWithRed:red green:green blue:blue alpha:self.wheelAlpha];
 }
@@ -255,6 +257,10 @@ static CGFloat const kMinimumValue = .005f;
 //    [self.generator cancel];
 //    [self.generator setCompletionBlock:nil];
 //  }
+  if(!self.operationQueue)
+  {
+    self.operationQueue = [[NSOperationQueue alloc] init];
+  }
   self.generator = [DDColorWheelGenerator generatorWithWidth:self.bounds.size.width height:self.bounds.size.height lightness:self.lightness completionBlock:^(UIImage *image) {
     dispatch_async(dispatch_get_main_queue(), ^{
       _imageView.image = image;
@@ -263,7 +269,8 @@ static CGFloat const kMinimumValue = .005f;
       [self setNeedsDisplay];
     });
   }];
-  [self.generator start];
+//  [self.generator start];
+  [self.operationQueue addOperations:@[ self.generator ] waitUntilFinished:YES];
 }
 
 @end

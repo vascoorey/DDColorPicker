@@ -65,7 +65,9 @@
     return;
   }
   [self willChangeValueForKey:@"isExecuting"];
-  [NSThread detachNewThreadSelector:@selector(main) toTarget:self withObject:nil];
+  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+    [self main];
+  });
   self.isExecuting = YES;
   [self didChangeValueForKey:@"isExecuting"];
 }
@@ -119,9 +121,9 @@
   {
     generatorQueue = dispatch_queue_create("com.deltadog.colorpicker.generatorqueue", DISPATCH_QUEUE_CONCURRENT);
   }
-//  dispatch_apply((size_t)side, generatorQueue, ^(size_t y) {
-  for(int y = 0; y < side; y ++)
-  {
+  dispatch_apply((size_t)side, generatorQueue, ^(size_t y) {
+//  for(int y = 0; y < side; y ++)
+//  {
     for(int x = 0; x < side; x ++)
     {
       if ([self isCancelled])
@@ -141,8 +143,8 @@
       bitmap[i+2] = b * 0xff;
       bitmap[i+3] = a * 0xff;
     }
-  }
-//  });
+//  }
+  });
 }
 
 - (UIImage *)imageWithRGBAData:(CFDataRef)data width:(NSUInteger)width height:(NSUInteger)height
