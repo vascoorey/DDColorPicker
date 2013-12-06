@@ -34,3 +34,4 @@ should) specify a dependency on this gem using the [Pessimistic Version
 Constraint][pvc] with two digits of precision. For example:
 
     'DDColorPicker', '~> 1.0'
+[semver]: http://semver.org/
