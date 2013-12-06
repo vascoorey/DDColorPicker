@@ -21,3 +21,16 @@ If you want to contribute to the project please do:
 3. Request a pull request with your changes
 
 *Any contributions to this project will be considered as licensed as MIT and right to define the license for all contributed code as transferred to Vasco Orey*
+
+Versioning
+============
+This library aims to adhere to [Semantic Versioning 2.0.0][semver]. Violations
+of this scheme should be reported as bugs. Specifically, if a minor or patch
+version is released that breaks backward compatibility, that version should be
+immediately yanked and/or a new version should be immediately released that
+restores compatibility. Breaking changes to the public API will only be
+introduced with new major versions. As a result of this policy, you can (and
+should) specify a dependency on this gem using the [Pessimistic Version
+Constraint][pvc] with two digits of precision. For example:
+
+    'DDColorPicker', '~> 1.0'
