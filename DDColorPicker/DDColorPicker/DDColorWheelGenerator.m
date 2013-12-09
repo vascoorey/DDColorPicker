@@ -159,26 +159,6 @@
   return image;
 }
 
-void getColorWheelValue(int widthHeight, int x, int y, float *outH, float *outS)
-{
-  int c = widthHeight / 2;
-  int size = 1;
-  float dx = (float)(x - c) / c;
-  float dy = (float)(y - c) / c;
-  float calc = (float)(dx*dx + dy*dy);
-  float temp = 0.f;
-  float d = 0.f;
-  //  float d = sqrtf((float)(dx*dx + dy*dy));
-  vvsqrtf(&d, &calc, &size);
-  calc = (float)dx / d;
-  temp = 0.f;
-  *outS = d;
-  vvacosf(&temp, &calc, &size);
-  *outH = temp / M_PI / 2.f;
-  //  *outH = acosf((float)dx / d) / M_PI / 2.0f;
-  if (dy < 0) *outH = 1.0 - *outH;
-}
-
 + (void)getColorWheelValue:(int)side x:(int)x y:(int)y toHue:(CGFloat *)hue saturation:(CGFloat *)saturation
 {
   int c = side / 2;
