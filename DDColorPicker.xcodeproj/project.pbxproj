@@ -30,6 +30,8 @@
 		BCDAFB14184E78AD00CC5EC9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BCDAFAF3184E78AD00CC5EC9 /* UIKit.framework */; };
 		BCDAFB1C184E78AD00CC5EC9 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BCDAFB1A184E78AD00CC5EC9 /* InfoPlist.strings */; };
 		BCDAFB1E184E78AD00CC5EC9 /* DDColorPickerTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BCDAFB1D184E78AD00CC5EC9 /* DDColorPickerTests.m */; };
+		BCE5E742185E15780054CD84 /* DDMagnifierView.m in Sources */ = {isa = PBXBuildFile; fileRef = BCE5E741185E15780054CD84 /* DDMagnifierView.m */; };
+		BCE5E743185E15780054CD84 /* DDMagnifierView.m in Sources */ = {isa = PBXBuildFile; fileRef = BCE5E741185E15780054CD84 /* DDMagnifierView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +73,8 @@
 		BCDAFB19184E78AD00CC5EC9 /* DDColorPickerTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "DDColorPickerTests-Info.plist"; sourceTree = "<group>"; };
 		BCDAFB1B184E78AD00CC5EC9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		BCDAFB1D184E78AD00CC5EC9 /* DDColorPickerTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DDColorPickerTests.m; sourceTree = "<group>"; };
+		BCE5E740185E15780054CD84 /* DDMagnifierView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDMagnifierView.h; path = DDColorPicker/DDMagnifierView.h; sourceTree = "<group>"; };
+		BCE5E741185E15780054CD84 /* DDMagnifierView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DDMagnifierView.m; path = DDColorPicker/DDMagnifierView.m; sourceTree = "<group>"; };
 		C6E42CA6FEEC4B6C8A84EA78 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = "<group>"; };
 		CD94C9F1233441FF8967685C /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -106,6 +110,8 @@
 			children = (
 				BCC0365C184E7BF5003662D9 /* DDColorWheelView.h */,
 				BCC0365D184E7BF5003662D9 /* DDColorWheelView.m */,
+				BCE5E740185E15780054CD84 /* DDMagnifierView.h */,
+				BCE5E741185E15780054CD84 /* DDMagnifierView.m */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -353,6 +359,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BCC03659184E7A09003662D9 /* DDColorPickerViewController.m in Sources */,
+				BCE5E742185E15780054CD84 /* DDMagnifierView.m in Sources */,
 				BCC0365E184E7BF5003662D9 /* DDColorWheelView.m in Sources */,
 				BCDAFB00184E78AD00CC5EC9 /* DDAppDelegate.m in Sources */,
 				BCCD4E7718509AA600748F33 /* DDColorWheelGenerator.m in Sources */,
@@ -369,6 +376,7 @@
 				BCC0365A184E7A09003662D9 /* DDColorPickerViewController.m in Sources */,
 				BCDAFB1E184E78AD00CC5EC9 /* DDColorPickerTests.m in Sources */,
 				BCCD4E7818509AA600748F33 /* DDColorWheelGenerator.m in Sources */,
+				BCE5E743185E15780054CD84 /* DDMagnifierView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

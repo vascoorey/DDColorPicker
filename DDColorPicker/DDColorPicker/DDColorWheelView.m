@@ -8,7 +8,6 @@
 
 #import "DDColorWheelView.h"
 #import "DDColorWheelGenerator.h"
-
 #import <Accelerate/Accelerate.h>
 
 static CGFloat const kMinimumValue = .01f;
@@ -18,9 +17,15 @@ static CGFloat const kMinimumValue = .01f;
 /**
  *  The currently displayed color wheel. Updated whenever drawRect: is called.
  */
-@property (nonatomic, strong) UIImage *colorWheel;
+@property (nonatomic, strong, readwrite) UIImage *colorWheel;
 
 @property (nonatomic, strong, readwrite) UIColor *currentColor;
+
+@property (nonatomic, readwrite) CGPoint touchLocation;
+
+@property (nonatomic, readwrite) DDColorWheelState colorWheelState;
+
+@property (nonatomic, readwrite) DDColorWheelState previousColorWheelState;
 
 @property (nonatomic, strong) UIColor *previousColor;
 
@@ -160,9 +165,9 @@ static CGFloat const kMinimumValue = .01f;
 
 - (void)layoutSubviews
 {
-  [super layoutSubviews];
   self.layer.cornerRadius = .5f * self.bounds.size.width;
   [self updateColorWheel];
+  [super layoutSubviews];
 }
 
 #pragma mark - Touch
@@ -197,49 +202,60 @@ static CGFloat const kMinimumValue = .01f;
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
   self.previousColor = nil;
-  CGPoint location = [[touches anyObject] locationInView:self];
-  if([self isValidPoint:location])
+  CGPoint touchLocation = [[touches anyObject] locationInView:self];
+  self.touchLocation = [[touches anyObject] locationInView:self.superview];
+  self.previousColorWheelState = self.colorWheelState;
+  self.colorWheelState = DDColorWheelStateTouchBegan;
+  if([self isValidPoint:touchLocation])
   {
     self.previousColor = self.currentColor;
-    self.currentColor = [self colorAtPoint:location];
+    self.currentColor = [self colorAtPoint:touchLocation];
     [self sendActionsForControlEvents:UIControlEventValueChanged];
   }
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-  CGPoint location = [[touches anyObject] locationInView:self];
-  if([self isValidPoint:location])
+  CGPoint touchLocation = [[touches anyObject] locationInView:self];
+  self.touchLocation = [[touches anyObject] locationInView:self.superview];
+  self.previousColorWheelState = self.colorWheelState;
+  if([self isValidPoint:touchLocation])
   {
     if(!self.previousColor)
     {
       self.previousColor = self.currentColor;
     }
-    self.currentColor = [self colorAtPoint:location];
+    self.currentColor = [self colorAtPoint:touchLocation];
+    self.colorWheelState = DDColorWheelStateTouchMovedInside;
     [self sendActionsForControlEvents:UIControlEventValueChanged];
   }
   else
   {
     self.currentColor = self.previousColor;
+    self.colorWheelState = DDColorWheelStateTouchMovedOutside;
     [self sendActionsForControlEvents:UIControlEventValueChanged];
   }
 }
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-  CGPoint location = [[touches anyObject] locationInView:self];
-  if([self isValidPoint:location])
+  CGPoint touchLocation = [[touches anyObject] locationInView:self];
+  self.touchLocation = [[touches anyObject] locationInView:self.superview];
+  self.previousColorWheelState = self.colorWheelState;
+  if([self isValidPoint:self.touchLocation])
   {
     if(!self.previousColor)
     {
       self.previousColor = self.currentColor;
     }
-    self.currentColor = [self colorAtPoint:location];
+    self.currentColor = [self colorAtPoint:touchLocation];
+    self.colorWheelState = DDColorWheelStateTouchEndedInside;
     [self sendActionsForControlEvents:UIControlEventValueChanged];
   }
   else if(self.previousColor)
   {
     self.currentColor = self.previousColor;
+    self.colorWheelState = DDColorWheelStateTouchEndedOutside;
     [self sendActionsForControlEvents:UIControlEventValueChanged];
   }
 }

@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "DDCOlorPicking.h"
 #import "DDColorWheelView.h"
+#import "DDMagnifierView.h"
 
 typedef NS_ENUM(uint32_t, DDColorPickerOptions)
 {
@@ -16,7 +17,8 @@ typedef NS_ENUM(uint32_t, DDColorPickerOptions)
   DDColorPickerOptionsShowLightness = (1 << 1),
   DDColorPickerOptionsShowDoneButton = (1 << 2),
   DDColorPickerOptionsShowDismissButton = (1 << 3),
-  DDColorPickerOptionsDefault = DDColorPickerOptionsShowAlpha | DDColorPickerOptionsShowLightness | DDColorPickerOptionsShowDoneButton | DDColorPickerOptionsShowDismissButton
+  DDColorPickerOptionsShowMagnifier = (1 << 4),
+  DDColorPickerOptionsDefault = DDColorPickerOptionsShowAlpha | DDColorPickerOptionsShowLightness | DDColorPickerOptionsShowDoneButton | DDColorPickerOptionsShowDismissButton | DDColorPickerOptionsShowMagnifier
 };
 
 /**
@@ -50,9 +52,19 @@ typedef NS_ENUM(uint32_t, DDColorPickerOptions)
 @property (nonatomic, readonly) DDColorWheelView *colorWheel;
 
 /**
+ *  The view in which the color wheel is in
+ */
+@property (nonatomic, readonly) UIView *colorWheelContainer;
+
+/**
  *  The color preview view
  */
 @property (nonatomic, readonly) UIView *colorPreviewView;
+
+/**
+ *  The magnifier
+ */
+@property (nonatomic, readonly) DDMagnifierView *magnifier;
 
 /**
  *  The lightness (luminance) slider

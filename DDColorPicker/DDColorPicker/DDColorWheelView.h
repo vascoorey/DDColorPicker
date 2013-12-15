@@ -8,6 +8,16 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSUInteger, DDColorWheelState)
+{
+  DDColorWheelStateNone = 0,
+  DDColorWheelStateTouchBegan,
+  DDColorWheelStateTouchMovedInside,
+  DDColorWheelStateTouchMovedOutside,
+  DDColorWheelStateTouchEndedInside,
+  DDColorWheelStateTouchEndedOutside
+};
+
 /**
  *  DDColorWheel acts as a 2 dimensional UISlider. Will send UIControlEventValueChanged events.
  */
@@ -17,6 +27,26 @@
  *  The currently selected color.
  */
 @property (nonatomic, readonly) UIColor *currentColor;
+
+/**
+ *  The current representation of the color wheel
+ */
+@property (nonatomic, readonly) UIImage *currentWheel;
+
+/**
+ *  The current touch location
+ */
+@property (nonatomic, readonly) CGPoint touchLocation;
+
+/**
+ *  The current color wheel state
+ */
+@property (nonatomic, readonly) DDColorWheelState colorWheelState;
+
+/**
+ *  The previous state
+ */
+@property (nonatomic, readonly) DDColorWheelState previousColorWheelState;
 
 /**
  *  The lightness of the color wheel (HSL). 0.0 - 1.0

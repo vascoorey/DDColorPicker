@@ -17,6 +17,10 @@
 
 @property (nonatomic, strong, readwrite) DDColorWheelView *colorWheel;
 
+@property (nonatomic, strong, readwrite) UIView *colorWheelContainer;
+
+@property (nonatomic, strong, readwrite) DDMagnifierView *magnifier;
+
 @property (nonatomic, strong, readwrite) UISlider *lightnessSlider;
 
 @property (nonatomic, strong, readwrite) UISlider *alphaSlider;
@@ -75,11 +79,14 @@
   
   self.view.backgroundColor = UIColor.whiteColor;
   
+  self.colorWheelContainer = [[UIView alloc] init];
+  [self.view addSubview:self.colorWheelContainer];
+  
   self.colorWheel = [DDColorWheelView colorWheel];
   self.colorWheel.wheelAlpha = 1.f;
   self.colorWheel.lightness = .5f;
   [self.colorWheel addTarget:self action:@selector(valueChanged:) forControlEvents:UIControlEventValueChanged];
-  [self.view addSubview:self.colorWheel];
+  [self.colorWheelContainer addSubview:self.colorWheel];
   
   self.colorPreviewView = [[UIView alloc] init];
   self.colorPreviewView.backgroundColor = UIColor.clearColor;
@@ -128,6 +135,11 @@
     [self.buttonView addSubview:self.dismissButton];
   }
   
+  self.magnifier = [DDMagnifierView magnifierWithTargetView:self.colorWheelContainer];
+  self.magnifier.hidden = !(self.options & DDColorPickerOptionsShowMagnifier);
+  self.magnifier.alpha = 0.f;
+  [self.view addSubview:self.magnifier];
+  
   if(self.overrideLayout)
   {
     if(self.makeLayout)
@@ -142,10 +154,22 @@
       make.right.equalTo(self.view.right);
     }];
     
+    [self.colorWheelContainer makeConstraints:^(MASConstraintMaker *make) {
+      make.top.equalTo(self.view.top);
+      make.left.equalTo(self.view.left);
+      make.right.equalTo(self.view.right);
+      make.bottom.equalTo(self.colorWheel.bottom);
+    }];
+    
     [self.colorWheel makeConstraints:^(MASConstraintMaker *make) {
       make.height.equalTo(self.colorWheel.width);
       make.width.equalTo(self.view.width).multipliedBy(.8f);
       make.centerX.equalTo(self.view.centerX);
+    }];
+    
+    [self.magnifier makeConstraints:^(MASConstraintMaker *make) {
+      make.width.equalTo(self.colorWheel.width).multipliedBy(.25f);
+      make.height.equalTo(self.magnifier.width);
     }];
     
     [self.colorPreviewView makeConstraints:^(MASConstraintMaker *make) {
@@ -268,9 +292,53 @@
   {
     self.colorWheel.wheelAlpha = self.alphaSlider.value;
   }
-  else if(sender == self.colorWheel && [self.delegate respondsToSelector:@selector(colorPicker:didHighlightColor:)])
+  else if(sender == self.colorWheel)
   {
-    [self.delegate colorPicker:self didHighlightColor:self.colorWheel.currentColor];
+    if([self.delegate respondsToSelector:@selector(colorPicker:didHighlightColor:)])
+    {
+      [self.delegate colorPicker:self didHighlightColor:self.colorWheel.currentColor];
+    }
+    switch (self.colorWheel.colorWheelState) {
+      case DDColorWheelStateTouchBegan:
+      {
+        self.magnifier.touchPoint = self.colorWheel.touchLocation;
+        self.magnifier.alpha = 0.f;
+        [UIView animateWithDuration:.33f animations:^{
+          self.magnifier.alpha = 1.f;
+        }];
+        break;
+      }
+      case DDColorWheelStateTouchMovedInside:
+      {
+        if(self.colorWheel.previousColorWheelState == DDColorWheelStateTouchMovedOutside)
+        {
+          [UIView animateWithDuration:.33f animations:^{
+            self.magnifier.touchPoint = self.colorWheel.touchLocation;
+          }];
+        }
+        else
+        {
+          self.magnifier.touchPoint = self.colorWheel.touchLocation;
+        }
+        break;
+      }
+      case DDColorWheelStateTouchEndedInside:
+      {
+        self.magnifier.touchPoint = self.colorWheel.touchLocation;
+      }
+      case DDColorWheelStateTouchEndedOutside:
+      {
+        self.magnifier.alpha = 1.f;
+        [UIView animateWithDuration:.33f animations:^{
+          self.magnifier.alpha = 0.f;
+        }];
+        break;
+      }
+      default:
+      {
+        break;
+      }
+    }
   }
   self.colorPreviewView.backgroundColor = self.colorWheel.currentColor;
   [self.colorPreviewView setNeedsDisplay];
