@@ -6,14 +6,14 @@
 //  Copyright (c) 2013 Delta Dog Studios. All rights reserved.
 //
 
-#import "DDColorWheel.h"
+#import "DDColorWheelView.h"
 #import "DDColorWheelGenerator.h"
 
 #import <Accelerate/Accelerate.h>
 
 static CGFloat const kMinimumValue = .01f;
 
-@interface DDColorWheel ()
+@interface DDColorWheelView ()
 
 /**
  *  The currently displayed color wheel. Updated whenever drawRect: is called.
@@ -40,7 +40,7 @@ static CGFloat const kMinimumValue = .01f;
 
 @end
 
-@implementation DDColorWheel
+@implementation DDColorWheelView
 {
   unsigned char *_pixelData;
   NSUInteger _totalPixels;

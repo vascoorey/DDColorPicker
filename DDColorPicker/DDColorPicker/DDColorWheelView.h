@@ -11,7 +11,7 @@
 /**
  *  DDColorWheel acts as a 2 dimensional UISlider. Will send UIControlEventValueChanged events.
  */
-@interface DDColorWheel : UIControl
+@interface DDColorWheelView : UIControl
 
 /**
  *  The currently selected color.
@@ -29,7 +29,7 @@
 @property (nonatomic) CGFloat wheelAlpha;
 
 /**
- *  Creates a new color wheel.
+ *  @return A new color wheel view.
  */
 + (instancetype)colorWheel;
 

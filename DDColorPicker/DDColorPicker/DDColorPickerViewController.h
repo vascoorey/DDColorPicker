@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "DDColorWheel.h"
+#import "DDCOlorPicking.h"
+#import "DDColorWheelView.h"
 
 typedef NS_ENUM(uint32_t, DDColorPickerOptions)
 {
@@ -17,8 +18,6 @@ typedef NS_ENUM(uint32_t, DDColorPickerOptions)
   DDColorPickerOptionsShowDismissButton = (1 << 3),
   DDColorPickerOptionsDefault = DDColorPickerOptionsShowAlpha | DDColorPickerOptionsShowLightness | DDColorPickerOptionsShowDoneButton | DDColorPickerOptionsShowDismissButton
 };
-
-@protocol DDColorPicking;
 
 /**
  *  Color picking view controller. Presents a color wheel, alpha & hue sliders.
@@ -31,63 +30,73 @@ typedef NS_ENUM(uint32_t, DDColorPickerOptions)
 @property (nonatomic, weak) id <DDColorPicking> delegate;
 
 /**
+ *  Set this property to YES if you want to specify your own layout.
+ */
+@property (nonatomic) BOOL overrideLayout;
+
+/**
+ *  Set this block with your own custom layout code. Will get called in viewDidLoad after all views have been added to the superview.
+ */
+@property (nonatomic, copy) void (^makeLayout)(DDColorPickerViewController *);
+
+/**
+ *  Set this block with you custom layout update code. Will get called in viewWillLayoutSubviews.
+ */
+@property (nonatomic, copy) void (^updateLayout)(DDColorPickerViewController *);
+
+/**
  *  The color wheel object managed by this view controller
  */
-@property (nonatomic, readonly) DDColorWheel *colorWheel;
+@property (nonatomic, readonly) DDColorWheelView *colorWheel;
 
+/**
+ *  The color preview view
+ */
+@property (nonatomic, readonly) UIView *colorPreviewView;
+
+/**
+ *  The lightness (luminance) slider
+ */
 @property (nonatomic, readonly) UISlider *lightnessSlider;
 
+/**
+ *  The alpha slider
+ */
 @property (nonatomic, readonly) UISlider *alphaSlider;
 
+/**
+ *  The view to which any sliders are added
+ */
+@property (nonatomic, readonly) UIView *sliderView;
+
+/**
+ *  The done button
+ */
 @property (nonatomic, readonly) UIButton *doneButton;
 
+/**
+ *  The dismiss button
+ */
 @property (nonatomic, readonly) UIButton *dismissButton;
 
 /**
- *  Creates a new color picker
+ *  The view to which any buttons are added
+ */
+@property (nonatomic, readonly) UIView *buttonView;
+
+/**
+ *  @return A new color picker with no delegate and default options
  */
 + (instancetype)colorPicker;
 
 /**
- *  Creates a new color picker with the given delegate and default options
+ *  @return A new color picker with the given delegate and default options
  */
 + (instancetype)colorPickerWithDelegate:(id <DDColorPicking>)delegate;
 
 /**
- *  Creates a new color picker with the given delegate and options
+ *  @return A new color picker with the given delegate and options
  */
 + (instancetype)colorPickerWithDelegate:(id <DDColorPicking>)delegate options:(DDColorPickerOptions)options;
-
-@end
-
-/**
- *  Color picking protocol. All methods are optional.
- */
-@protocol DDColorPicking <NSObject>
-
-@required
-
-/**
- *  Sent to the delegate when the user specifically selected the given color.
- *
- *  @param viewController The sender instance
- *  @param color          The selected color
- */
-- (void)colorPicker:(DDColorPickerViewController *)viewController didPickColor:(UIColor *)color;
-
-@optional
-
-/**
- *  Sent to the delegate when the specified color has been highlighted (i.e. the user swiped over the color).
- *
- *  @param viewController The sender instance
- *  @param color          The highlighted color
- */
-- (void)colorPicker:(DDColorPickerViewController *)viewController didHighlightColor:(UIColor *)color;
-
-/**
- *  Sent to the delegate if the user explicitly dismissed the controller
- */
-- (void)colorPickerDidDismiss:(DDColorPickerViewController *)viewController;
 
 @end

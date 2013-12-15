@@ -15,7 +15,7 @@
 
 @property (nonatomic) DDColorPickerOptions options;
 
-@property (nonatomic, strong, readwrite) DDColorWheel *colorWheel;
+@property (nonatomic, strong, readwrite) DDColorWheelView *colorWheel;
 
 @property (nonatomic, strong, readwrite) UISlider *lightnessSlider;
 
@@ -25,7 +25,11 @@
 
 @property (nonatomic, strong, readwrite) UIButton *dismissButton;
 
-@property (nonatomic, strong) id <MASConstraint> colorWheelTopOffsetConstraint;
+@property (nonatomic, strong, readwrite) UIView *colorPreviewView;
+
+@property (nonatomic, strong, readwrite) UIView *sliderView;
+
+@property (nonatomic, strong, readwrite) UIView *buttonView;
 
 @end
 
@@ -69,27 +73,21 @@
   [super viewDidLoad];
   // UI components will be setup depending on what options are set.
   
-  self.colorWheel = [DDColorWheel colorWheel];
+  self.view.backgroundColor = UIColor.whiteColor;
+  
+  self.colorWheel = [DDColorWheelView colorWheel];
   self.colorWheel.wheelAlpha = 1.f;
   self.colorWheel.lightness = .5f;
   [self.colorWheel addTarget:self action:@selector(valueChanged:) forControlEvents:UIControlEventValueChanged];
   [self.view addSubview:self.colorWheel];
   
-  [self.colorWheel makeConstraints:^(MASConstraintMaker *make) {
-    make.height.equalTo(self.colorWheel.width);
-    make.width.equalTo(self.view.width).multipliedBy(.8f);
-    make.centerX.equalTo(self.view.centerX);
-    self.colorWheelTopOffsetConstraint = make.top.equalTo(self.view.top).with.offset(15);
-  }];
+  self.colorPreviewView = [[UIView alloc] init];
+  self.colorPreviewView.backgroundColor = UIColor.clearColor;
+  [self.view addSubview:self.colorPreviewView];
   
-  UIView *sliderView = [[UIView alloc] init];
-  [self.view addSubview:sliderView];
+  self.sliderView = [[UIView alloc] init];
+  [self.view addSubview:self.sliderView];
   
-  [sliderView makeConstraints:^(MASConstraintMaker *make) {
-    make.top.equalTo(self.colorWheel.bottom);
-    make.left.equalTo(self.view.left);
-    make.right.equalTo(self.view.right);
-  }];
   
   if(self.options & DDColorPickerOptionsShowAlpha)
   {
@@ -98,17 +96,7 @@
     self.alphaSlider.maximumValue = 1.f;
     self.alphaSlider.value = 1.f;
     [self.alphaSlider addTarget:self action:@selector(valueChanged:) forControlEvents:UIControlEventValueChanged];
-    [sliderView addSubview:self.alphaSlider];
-    
-    [self.alphaSlider makeConstraints:^(MASConstraintMaker *make) {
-      make.width.equalTo(sliderView.width).multipliedBy(.8f);
-      make.centerX.equalTo(sliderView.centerX);
-      make.top.equalTo(self.colorWheel.bottom);
-      if(!(self.options & DDColorPickerOptionsShowLightness))
-      {
-        make.bottom.equalTo(sliderView.bottom).with.offset(-15);
-      }
-    }];
+    [self.sliderView addSubview:self.alphaSlider];
   }
   
   if(self.options & DDColorPickerOptionsShowLightness)
@@ -118,74 +106,154 @@
     self.lightnessSlider.maximumValue = 1.f;
     self.lightnessSlider.value = .5f;
     [self.lightnessSlider addTarget:self action:@selector(valueChanged:) forControlEvents:UIControlEventValueChanged];
-    [sliderView addSubview:self.lightnessSlider];
-    
-    [self.lightnessSlider makeConstraints:^(MASConstraintMaker *make) {
-      make.width.equalTo(sliderView.width).multipliedBy(.8f);
-      make.centerX.equalTo(sliderView.centerX);
-      if(self.options & DDColorPickerOptionsShowAlpha)
-      {
-        make.top.equalTo(self.alphaSlider.bottom);
-      }
-      else
-      {
-        make.top.equalTo(self.colorWheel.bottom);
-      }
-      make.bottom.equalTo(sliderView.bottom).with.offset(-15);
-    }];
+    [self.sliderView addSubview:self.lightnessSlider];
   }
   
-  UIView *buttonView = [[UIView alloc] init];
-  [self.view addSubview:buttonView];
+  self.buttonView = [[UIView alloc] init];
+  [self.view addSubview:self.buttonView];
   
   if(self.options & DDColorPickerOptionsShowDoneButton)
   {
     self.doneButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.doneButton setTitle:@"Done" forState:UIControlStateNormal];
     [self.doneButton addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonView addSubview:self.doneButton];
-    
-    [self.doneButton makeConstraints:^(MASConstraintMaker *make) {
-      make.trailing.equalTo(buttonView.right).with.offset(-15);
-      make.top.equalTo(buttonView.top);
-      make.bottom.equalTo(buttonView.bottom).with.offset(-15);
-    }];
+    [self.buttonView addSubview:self.doneButton];
   }
   
   if(self.options & DDColorPickerOptionsShowDismissButton)
   {
     self.dismissButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.dismissButton setTitle:@"Done" forState:UIControlStateNormal];
+    [self.dismissButton setTitle:@"Dismiss" forState:UIControlStateNormal];
     [self.dismissButton addTarget:self action:@selector(buttonTapped:) forControlEvents:UIControlEventTouchUpInside];
-    [buttonView addSubview:self.dismissButton];
-    
-    [self.dismissButton makeConstraints:^(MASConstraintMaker *make) {
-      make.leading.equalTo(buttonView.left).with.offset(15);
-      make.top.equalTo(buttonView.top);
-      make.bottom.equalTo(buttonView.bottom).with.offset(-15);
-    }];
+    [self.buttonView addSubview:self.dismissButton];
   }
   
-  [buttonView makeConstraints:^(MASConstraintMaker *make) {
-    make.top.equalTo(sliderView.bottom);
-    make.left.equalTo(self.view.left);
-    make.right.equalTo(self.view.right);
-    make.bottom.equalTo(self.view.bottom);
-  }];
-}
-
-- (void)viewWillLayoutSubviews
-{
-  [self.colorWheelTopOffsetConstraint uninstall];
-  [self.colorWheel makeConstraints:^(MASConstraintMaker *make) {
-    self.colorWheelTopOffsetConstraint = make.top.equalTo(self.view.top).with.offset(self.view.bounds.size.width * .1f);
-  }];
-  [super viewWillLayoutSubviews];
+  if(self.overrideLayout)
+  {
+    if(self.makeLayout)
+    {
+      self.makeLayout(self);
+    }
+  }
+  else
+  {
+    [self.sliderView makeConstraints:^(MASConstraintMaker *make) {
+      make.left.equalTo(self.view.left);
+      make.right.equalTo(self.view.right);
+    }];
+    
+    [self.colorWheel makeConstraints:^(MASConstraintMaker *make) {
+      make.height.equalTo(self.colorWheel.width);
+      make.width.equalTo(self.view.width).multipliedBy(.8f);
+      make.centerX.equalTo(self.view.centerX);
+    }];
+    
+    [self.colorPreviewView makeConstraints:^(MASConstraintMaker *make) {
+      make.left.equalTo(self.colorWheel.left);
+      make.top.equalTo(self.colorWheel.top);
+      make.width.equalTo(self.colorWheel.width).multipliedBy(.125f);
+      make.height.equalTo(self.colorPreviewView.width);
+    }];
+    
+    if(self.options & DDColorPickerOptionsShowAlpha)
+    {
+      [self.alphaSlider makeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(self.sliderView.width).multipliedBy(.8f);
+        make.centerX.equalTo(self.sliderView.centerX);
+        make.top.equalTo(self.sliderView.top);
+      }];
+    }
+    
+    if(self.options & DDColorPickerOptionsShowLightness)
+    {
+      [self.lightnessSlider makeConstraints:^(MASConstraintMaker *make) {
+        make.width.equalTo(self.sliderView.width).multipliedBy(.8f);
+        make.centerX.equalTo(self.sliderView.centerX);
+      }];
+    }
+    
+    if(self.options & DDColorPickerOptionsShowDoneButton)
+    {
+      [self.doneButton makeConstraints:^(MASConstraintMaker *make) {
+        make.right.equalTo(self.buttonView.right);
+        make.top.equalTo(self.buttonView.top);
+        make.bottom.equalTo(self.buttonView.bottom);
+      }];
+    }
+    
+    if(self.options & DDColorPickerOptionsShowDismissButton)
+    {
+      [self.dismissButton makeConstraints:^(MASConstraintMaker *make) {
+        make.left.equalTo(self.buttonView.left);
+        make.top.equalTo(self.buttonView.top);
+        make.bottom.equalTo(self.buttonView.bottom);
+      }];
+    }
+    
+    [self.buttonView makeConstraints:^(MASConstraintMaker *make) {
+      make.left.equalTo(self.colorWheel.left);
+      make.right.equalTo(self.colorWheel.right);
+    }];
+  }
 }
 
 - (NSUInteger)supportedInterfaceOrientations
 {
   return UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown;
+}
+
+- (void)viewWillLayoutSubviews
+{
+  if(self.overrideLayout)
+  {
+    if(self.updateLayout)
+    {
+      self.updateLayout(self);
+    }
+  }
+  else
+  {
+    CGFloat offset = self.view.frame.size.width * .1f;
+    
+    [self.colorWheel updateConstraints:^(MASConstraintMaker *make) {
+      make.top.equalTo(self.view.top).with.offset(offset);
+    }];
+    
+    [self.sliderView updateConstraints:^(MASConstraintMaker *make) {
+      make.top.equalTo(self.colorWheel.bottom).with.offset(offset);
+    }];
+    
+    [self.alphaSlider updateConstraints:^(MASConstraintMaker *make) {
+      if(!(self.options & DDColorPickerOptionsShowLightness))
+      {
+        make.bottom.equalTo(self.sliderView.bottom);
+      }
+    }];
+    
+    [self.lightnessSlider updateConstraints:^(MASConstraintMaker *make) {
+      if(self.options & DDColorPickerOptionsShowAlpha)
+      {
+        make.top.equalTo(self.alphaSlider.bottom).with.offset(offset * .5f);
+      }
+      else
+      {
+        make.top.equalTo(self.sliderView.top);
+      }
+      make.bottom.equalTo(self.sliderView.bottom);
+    }];
+    
+    [self.buttonView updateConstraints:^(MASConstraintMaker *make) {
+      make.top.lessThanOrEqualTo(self.sliderView.bottom).with.offset(offset);
+      make.bottom.equalTo(self.view.bottom).with.offset(-offset);
+    }];
+  }
+  [super viewWillLayoutSubviews];
+}
+
+- (void)viewDidLayoutSubviews
+{
+  self.colorPreviewView.layer.cornerRadius = .5f * self.colorPreviewView.bounds.size.width;
+  [super viewDidLayoutSubviews];
 }
 
 #pragma mark - Actions
@@ -204,6 +272,8 @@
   {
     [self.delegate colorPicker:self didHighlightColor:self.colorWheel.currentColor];
   }
+  self.colorPreviewView.backgroundColor = self.colorWheel.currentColor;
+  [self.colorPreviewView setNeedsDisplay];
 }
 
 - (void)buttonTapped:(id)sender

@@ -11,7 +11,7 @@
 @interface DDColorWheelGenerator : NSOperation
 
 /**
- *  Creates a new generation operation for the given lightness
+ *  @return A new generation operation for the given lightness
  */
 + (instancetype)generatorWithWidth:(NSUInteger)width height:(NSUInteger)height lightness:(CGFloat)lightness completionBlock:(void (^)(UIImage *))block;
 

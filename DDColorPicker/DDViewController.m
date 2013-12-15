@@ -7,11 +7,11 @@
 //
 
 #import "DDViewController.h"
-#import "DDColorWheel.h"
+#import "DDColorWheelView.h"
 #import "DDColorPickerViewController.h"
 
 @interface DDViewController () <DDColorPicking>
-@property (nonatomic, strong) DDColorWheel *colorWheel;
+@property (nonatomic, strong) DDColorWheelView *colorWheel;
 @property (nonatomic, strong) UIPopoverController *popover;
 @property (weak, nonatomic) IBOutlet UIView *colorView;
 @property (nonatomic, strong) IBOutlet UIButton *button;
@@ -32,13 +32,23 @@
 
 - (IBAction)showPicker:(UIButton *)sender
 {
-  self.popover = [[UIPopoverController alloc] initWithContentViewController:[DDColorPickerViewController colorPickerWithDelegate:self]];
+  DDColorPickerViewController *picker = [DDColorPickerViewController colorPickerWithDelegate:self];
+  picker.overrideLayout = NO;
+  self.popover = [[UIPopoverController alloc] initWithContentViewController:picker];
   [self.popover presentPopoverFromRect:sender.frame inView:self.view permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
 - (IBAction)presentPicker:(id)sender
 {
-  [self presentViewController:[DDColorPickerViewController colorPickerWithDelegate:self] animated:YES completion:nil];
+  DDColorPickerViewController *picker = [DDColorPickerViewController colorPickerWithDelegate:self];
+  picker.overrideLayout = NO;
+  picker.makeLayout = ^(DDColorPickerViewController *vc) {
+    NSLog(@"Should make the layout here.");
+  };
+  picker.updateLayout = ^(DDColorPickerViewController *vc) {
+    NSLog(@"Should update the layout here");
+  };
+  [self presentViewController:picker animated:YES completion:nil];
 }
 
 #pragma mark - DDColorPicking

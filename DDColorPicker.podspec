@@ -33,6 +33,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.source       = { :git => "http://github.com/vascoorey/DDColorPicker.git", :tag => s.version.to_s }
-  s.source_files  = 'Podfile', 'DDColorPicker/**/*.{h,m}'
+  s.source_files  = 'DDColorPicker/**/*.{h,m}'
+  s.dependency 'Masonry', '~> 0.3.0'
   s.frameworks = 'Accelerate.framework'
 end
